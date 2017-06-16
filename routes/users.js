@@ -12,7 +12,7 @@ router.get('/register', function(req, res){
 
 // Login
 router.get('/login', function(req, res){
-	res.render('login');
+	res.render('login',{layout: 'layouts/layout' });
 });
 
 // Register User

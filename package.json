@@ -19,6 +19,7 @@
     "express-messages": "*",
     "express-session": "*",
     "express-validator": "*",
+    "hbs": "^4.0.1",
     "mongodb": "*",
     "mongoose": "*",
     "passport": "*",

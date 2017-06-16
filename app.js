@@ -2,7 +2,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var exphbs = require('express-handlebars');
+//var exphbs = require('express-handlebars');
+var  hbs = require('hbs');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var session = require('express-session');
@@ -19,22 +20,22 @@ var mongoose = require('./db/mongoose');
 var db = mongoose.connection;
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var todo = require('./routes/todo');
 
 // Init App
 var app = express();
 
 // View Engine
-app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exphbs({defaultLayout:'layout'}));
-app.set('view engine', 'handlebars');
+hbs.registerPartials(__dirname + '/views/partials');
+app.set('view engine','hbs');
+app.use(express.static( __dirname + '/public'));
 
 // BodyParser Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// Set Static Folder
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Express Session
 app.use(session({
@@ -81,6 +82,7 @@ app.use(function (req, res, next) {
 //routes
 app.use('/', routes);
 app.use('/users', users);
+app.use('/todo',todo);
 
 // Set Port
 //app.set('port', (process.env.PORT || 3000));
