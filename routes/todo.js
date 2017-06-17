@@ -9,12 +9,20 @@ router.get('/', pass.ensureAuthenticated, function(req, res){
 });
 */
 
-router.get('/projects',pass.ensureAuthenticated, function (req, res) {
+router.get('/', function (req, res) {
   res.render('todo/projects',{
     pageTitle : 'Projects Page',
-    welcomeMessage : 'This is projects page',
-    layout: 'layouts/layout'
+    welcomeMessage : 'This is projects page' //,
+    //layout: 'layouts/layout'
   });
+});
+
+router.get('/dash', function (req, res) {
+  res.render('todo/dash');
+});
+
+router.get('/plain', function (req, res) {
+  res.render('todo/plain');
 });
 
 module.exports = router;
