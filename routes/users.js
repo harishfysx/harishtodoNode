@@ -2,12 +2,12 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-
+var _ = require('lodash');
 var User = require('../models/user');
 
 // Register
 router.get('/register', function(req, res){
-	res.render('register');
+	res.render('register',{layout: 'layouts/layout' });
 });
 
 // Login
@@ -55,12 +55,37 @@ router.post('/register', function(req, res){
 		res.redirect('/users/login');
 	}
 });
-
+//login local passport strategy
 router.post('/login',
   passport.authenticate('local', {successRedirect:'/', failureRedirect:'/users/login',failureFlash: true}),
   function(req, res) {
     res.redirect('/');
   });
+
+var authFnction = (req,res,next) =>{
+	console.log('testing authFnction')
+	var body = _.pick(req.body, ['username', 'password']);
+	User.findByCredentials(body.username,body.password).then((user) =>{
+		console.log('gotuser',user)
+		next();
+	}).catch((e) =>{
+		//done(null,false,{message: e})
+		console.log('error test',e);
+		next();
+	})
+}
+//login local passport jwt
+router.post('/authenticate',(req,res) =>{
+	var body = _.pick(req.body, ['username', 'password']);
+	User.findByCredentials(body.username,body.password).then((user) =>{
+		console.log(user)
+		res.send(user.email)
+	}).catch((e) =>{
+		res.status(400).send(e)
+	})
+ 	//res.send(body)
+})
+//
 
 router.get('/logout', function(req, res){
 	req.logout();

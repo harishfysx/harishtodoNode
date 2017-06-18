@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 //var exphbs = require('express-handlebars');
 var  hbs = require('hbs');
+var morgan = require('morgan')
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var session = require('express-session');
@@ -29,7 +30,8 @@ var app = express();
 hbs.registerPartials(__dirname + '/views/partials');
 app.set('view engine','hbs');
 app.use(express.static( __dirname + '/public'));
-
+//logging
+app.use(morgan('dev'));
 // BodyParser Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -20,10 +20,15 @@
     "express-session": "*",
     "express-validator": "*",
     "hbs": "^4.0.1",
+    "jwt-simple": "^0.5.1",
+    "lodash": "^4.17.4",
     "mongodb": "*",
     "mongoose": "*",
+    "morgan": "^1.8.2",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "*"
+    "passport-jwt": "^2.2.1",
+    "passport-local": "*",
+    "validator": "^7.0.0"
   }
 }

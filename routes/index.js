@@ -4,7 +4,7 @@ var pass = require('./../middleware/pass');
 
 // Get Homepage
 router.get('/', pass.ensureAuthenticated, function(req, res){
-	res.render('index');
+	res.render('index',{layout: 'layouts/layout' });
 });
 
 module.exports = router;

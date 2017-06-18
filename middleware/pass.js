@@ -1,8 +1,35 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var User = require('../models/user');
+var passportJWT = require("passport-jwt");
+//var users = require("./users.js");
+//var cfg = require("./config.js");
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
+var params = {
+    secretOrKey: 'mybadasskey',
+    jwtFromRequest: ExtractJwt.fromAuthHeader()
+};
 
-passport.use(new LocalStrategy(
+
+//localimports
+var User = require('../models/user');
+/*
+passport.use(new JwtStrategy(params, function(jwt_payload, done) {
+    User.findOne({id: jwt_payload.id}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            done(null, user);
+        } else {
+            done(null, false);
+            // or you could create a new account
+        }
+    });
+}));
+*/
+/*
+var localStrat = new LocalStrategy(
   function(username, password, done) {
    User.getUserByUsername(username, function(err, user){
    	if(err) throw err;
@@ -19,8 +46,37 @@ passport.use(new LocalStrategy(
    		}
    	});
    });
-  }));
+ });
+*/
+var localStrat = new LocalStrategy((username,password,done) =>{
+  User.findByCredentials(username,password).then((user) =>{
+    done(null, user);
+  }).catch((e) =>{
+    done(null,false,{message: e})
+  })
+})
 
+passport.use(localStrat);
+
+passport.serializeUser((user,done) =>{
+//  console.log('serializeUser',user.password);
+  done(null,user.id);
+});
+
+passport.deserializeUser((id,done) =>{
+  User.findOne({_id:id}).then((user) =>{
+    if(!user){
+      return done(null,null)
+    }
+    console.log('User Found deserializeUser')
+    done(null,user)
+  }).catch((e) =>{
+    console.log(e);
+    done(e,null);
+  })
+})
+
+/*
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -30,7 +86,7 @@ passport.deserializeUser(function(id, done) {
     done(err, user);
   });
 });
-
+*/
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 		return next();
