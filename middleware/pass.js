@@ -14,15 +14,7 @@ var opts = {
 //localimports
 var User = require('../models/user');
 
-var localStrat = new LocalStrategy((username,password,done) =>{
-  User.findByCredentials(username,password).then((user) =>{
-    done(null, user);
-  }).catch((e) =>{
-    done(null,false,{message: e})
-  })
-})
-
-passport.use(localStrat);
+//
 
 passport.serializeUser((user,done) =>{
 //  console.log('serializeUser',user.password);
@@ -42,8 +34,17 @@ passport.deserializeUser((id,done) =>{
   })
 });
 //
-passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-  console.log('passort jwt is being used',jwt_payload._id)
+//Local strategy function
+var localStrat = new LocalStrategy((username,password,done) =>{
+  User.findByCredentials(username,password).then((user) =>{
+    done(null, user);
+  }).catch((e) =>{
+    done(null,false,{message: e})
+  })
+});
+//JWT strategy functio
+var jwtStrat = new JwtStrategy(opts, function(jwt_payload, done) {
+  //console.log('passort jwt is being used',jwt_payload._id)
     User.findOne({_id: jwt_payload._id}, function(err, user) {
         if (err) {
             return done(err, false);
@@ -56,10 +57,13 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
             // or you could create a new account
         }
     });
-}));
+});
+//
+passport.use(localStrat);
+passport.use(jwtStrat);
 
 //
-function ensureAuthenticated(req, res, next){
+function ensureAuthenticatedUI(req, res, next){
 	if(req.isAuthenticated()){
 		return next();
 	} else {
@@ -67,5 +71,14 @@ function ensureAuthenticated(req, res, next){
 		res.redirect('/users/login');
 	}
 }
-
-module.exports = {ensureAuthenticated}
+//
+function ensureAuthenticatedAPI(req, res, next){
+	if(req.isAuthenticated()){
+		return next();
+	} else {
+		//req.flash('error_msg','You are not logged in');
+		res.status(401).send('Unauthorized')
+	}
+}
+//
+module.exports = {ensureAuthenticatedUI,ensureAuthenticatedAPI}

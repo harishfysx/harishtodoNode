@@ -6,7 +6,7 @@ var _ = require('lodash');
 
 //local imprts
 var User = require('../models/user');
-var passjwt = require('./../middleware/pass-jwt')
+var pass = require('./../middleware/pass');
 
 // Register
 router.get('/register', function(req, res){
@@ -88,7 +88,7 @@ router.post('/authenticate',(req,res) =>{
  	//res.send(body)
 })
 //jwt authenticated dashboard passjwt
-router.get('/dash',passport.authenticate('jwt'),(req,res) =>{
+router.get('/dash',passport.authenticate('jwt',{session : false}),(req,res) =>{
 	res.send('Welcome to dashboard')
 })
 //

@@ -54,10 +54,10 @@ UserSchema.methods.toJSON = function (){
 UserSchema.methods.generateAuthToken = function (){
   var user = this;
   //var access = 'auth';
-  console.log('user sent for token gen',user._id);
+  //console.log('user sent for token gen',user._id);
 	//var token = jwt.sign({ foo: 'bar' }, 'shhhhh').toString()
   var token = jwt.sign({_id:user._id.toHexString()},'mybadasskey',{expiresIn : 180}).toString();
-		console.log('generating token',token)
+		//console.log('generating token',token)
 		//var token = jwt.sign( user._id.toHexString(),process.env.JWT_SECRET).toString();
 		return Promise.resolve(token);
   // user.tokens.push({access,token});
