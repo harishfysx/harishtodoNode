@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const validator = require('validator');
 
@@ -53,8 +54,11 @@ UserSchema.methods.toJSON = function (){
 UserSchema.methods.generateAuthToken = function (){
   var user = this;
   //var access = 'auth';
-  var token = jwt.sign({_id:user._id.toHexString(),access},'mybadasskey',{expiresIn : 180}).toString();
-    //var token = jwt.sign( user._id.toHexString(),'process.env.JWT_SECRET').toString();
+  console.log('user sent for token gen',user._id);
+	//var token = jwt.sign({ foo: 'bar' }, 'shhhhh').toString()
+  var token = jwt.sign({_id:user._id.toHexString()},'mybadasskey',{expiresIn : 180}).toString();
+		console.log('generating token',token)
+		//var token = jwt.sign( user._id.toHexString(),process.env.JWT_SECRET).toString();
 		return Promise.resolve(token);
   // user.tokens.push({access,token});
   // return user.save().then(() =>{
@@ -70,7 +74,7 @@ UserSchema.statics.findByCredentials = function(username,password){
       return Promise.reject('Invalid Username ');
     }
     return new Promise((resolve,reject) =>{
-			console.log('comparing password',user.password)
+			//console.log('comparing password',user.password)
       bcrypt.compare(password,user.password,(err,res) =>{
         if(res){
 					console.log('user resolved ')

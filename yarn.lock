@@ -450,7 +450,7 @@ joi@^6.10.1:
     moment "2.x.x"
     topo "1.x.x"
 
-jsonwebtoken@^7.0.0:
+jsonwebtoken@^7.0.0, jsonwebtoken@^7.4.1:
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-7.4.1.tgz#7ca324f5215f8be039cd35a6c45bb8cb74a448fb"
   dependencies:

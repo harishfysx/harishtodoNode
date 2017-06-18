@@ -3,7 +3,10 @@ var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var _ = require('lodash');
+
+//local imprts
 var User = require('../models/user');
+var passjwt = require('./../middleware/pass-jwt')
 
 // Register
 router.get('/register', function(req, res){
@@ -62,28 +65,31 @@ router.post('/login',
     res.redirect('/');
   });
 
-var authFnction = (req,res,next) =>{
-	console.log('testing authFnction')
-	var body = _.pick(req.body, ['username', 'password']);
-	User.findByCredentials(body.username,body.password).then((user) =>{
-		console.log('gotuser',user)
-		next();
-	}).catch((e) =>{
-		//done(null,false,{message: e})
-		console.log('error test',e);
-		next();
-	})
-}
+
 //login local passport jwt
 router.post('/authenticate',(req,res) =>{
 	var body = _.pick(req.body, ['username', 'password']);
 	User.findByCredentials(body.username,body.password).then((user) =>{
-		console.log(user)
-		res.send(user.email)
+		//console.log(user)
+		return user.generateAuthToken().then((token) => {
+			if(!token){
+				return res.send('token not recievd');
+			}
+			res.header('x-auth', token).send(token);
+			//res.header('x-auth', token).send(user);
+			console.log(token)
+
+
+		})
+		//res.send(user.email)
 	}).catch((e) =>{
 		res.status(400).send(e)
 	})
  	//res.send(body)
+})
+//jwt authenticated dashboard passjwt
+router.get('/dash',passport.authenticate('jwt'),(req,res) =>{
+	res.send('Welcome to dashboard')
 })
 //
 

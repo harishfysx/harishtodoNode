@@ -5,7 +5,7 @@ var passportJWT = require("passport-jwt");
 //var cfg = require("./config.js");
 var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
-var params = {
+var opts = {
     secretOrKey: 'mybadasskey',
     jwtFromRequest: ExtractJwt.fromAuthHeader()
 };
@@ -13,41 +13,7 @@ var params = {
 
 //localimports
 var User = require('../models/user');
-/*
-passport.use(new JwtStrategy(params, function(jwt_payload, done) {
-    User.findOne({id: jwt_payload.id}, function(err, user) {
-        if (err) {
-            return done(err, false);
-        }
-        if (user) {
-            done(null, user);
-        } else {
-            done(null, false);
-            // or you could create a new account
-        }
-    });
-}));
-*/
-/*
-var localStrat = new LocalStrategy(
-  function(username, password, done) {
-   User.getUserByUsername(username, function(err, user){
-   	if(err) throw err;
-   	if(!user){
-   		return done(null, false, {message: 'Unknown User'});
-   	}
 
-   	User.comparePassword(password, user.password, function(err, isMatch){
-   		if(err) throw err;
-   		if(isMatch){
-   			return done(null, user);
-   		} else {
-   			return done(null, false, {message: 'Invalid password'});
-   		}
-   	});
-   });
- });
-*/
 var localStrat = new LocalStrategy((username,password,done) =>{
   User.findByCredentials(username,password).then((user) =>{
     done(null, user);
@@ -74,19 +40,25 @@ passport.deserializeUser((id,done) =>{
     console.log(e);
     done(e,null);
   })
-})
-
-/*
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
 });
+//
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+  console.log('passort jwt is being used',jwt_payload._id)
+    User.findOne({_id: jwt_payload._id}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            done(null, user);
+            console.log('jwt returned user',user)
+        } else {
+            done(null, false);
+            // or you could create a new account
+        }
+    });
+}));
 
-passport.deserializeUser(function(id, done) {
-  User.getUserById(id, function(err, user) {
-    done(err, user);
-  });
-});
-*/
+//
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 		return next();
